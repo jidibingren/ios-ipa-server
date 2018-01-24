@@ -52,7 +52,7 @@ var ipAddress = program.ip || underscore
 
 
 var globalCerFolder = osHomedir() + '/.ios-ipa-server/' + ipAddress;
-var port = program.port || 1234;
+var port = parseInt(program.port, 10) || 1234;
 var port2 = port + 1;
 
 if (!exit.exited) {
@@ -118,7 +118,7 @@ function main() {
 
   app.get('/ipa/:ipa', function(req, res) {
     var encodedName = req.params.ipa.replace('.ipa', '');
-    var ipa = base64.decode(encodedName);
+    var ipa = encodedName;
     var filename = ipasDir + '/' + ipa + '.ipa';
 
     // This line opens the file as a readable stream
@@ -173,7 +173,7 @@ function main() {
       var template = data.toString();
 
       var encodedName = req.params.file;
-      var name = base64.decode(encodedName)
+      var name = encodedName;
       var rendered = mustache.render(template, {
         encodedName: encodedName,
         name: name,
@@ -228,7 +228,7 @@ function itemInfoWithName(name, ipasDir) {
   fs.removeSync(tmpIn);
   fs.removeSync(tmpOut);
   return {
-    encodedName: base64.encode(name),
+    encodedName: name,
     name: name,
     time: time,
     timeString: timeString,
