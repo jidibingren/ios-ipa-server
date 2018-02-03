@@ -222,7 +222,7 @@ function itemInfoWithName(name, ipasDir) {
   var iconString = '';
   var exeName = '';
   var iconName = name.split('_')[0] + '.png';
-  var iconPath = ipasDir + iconName;
+  var iconPath = ipasDir + '/' + iconName;
 
   if (process.platform == 'darwin') {
     exeName = 'pngdefry-osx';
