@@ -1,6 +1,6 @@
 {
   "name": "@jidibingren/ios-ipa-server",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Create a HTTPS Server to install ipa locally",
   "dependencies": {
     "adm-zip": "^0.4.7",
