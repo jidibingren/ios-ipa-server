@@ -136,6 +136,26 @@ function main() {
     });
   });
 
+  app.get('/icon/:icon', function(req, res) {
+    var encodedName = req.params.icon.replace('.icon', '');
+    var icon = encodedName;
+    var filename = ipasDir + '/' + icon;
+
+    // This line opens the file as a readable stream
+    var readStream = fs.createReadStream(filename);
+
+    // This will wait until we know the readable stream is actually valid before piping
+    readStream.on('open', function() {
+      // This just pipes the read stream to the response object (which goes to the client)
+      readStream.pipe(res);
+    });
+
+    // This catches any errors that happen while creating the readable stream (usually invalid names)
+    readStream.on('error', function(err) {
+      res.end(err);
+    });
+  });
+
   app.get(['/', '/download'], function(req, res, next) {
 
     fs.readFile(path.join(__dirname, '..', 'templates') + '/download.html', function(err, data) {
@@ -174,11 +194,13 @@ function main() {
 
       var encodedName = req.params.file;
       var name = encodedName;
+      var iconName = name.split('_')[0];
       var rendered = mustache.render(template, {
         encodedName: encodedName,
         name: name,
         ip: ipAddress,
         port: port,
+        iconName:iconName,
       });
 
       res.set('Content-Type', 'text/plain; charset=utf-8');
@@ -199,6 +221,9 @@ function itemInfoWithName(name, ipasDir) {
   // get ipa icon only works on macos
   var iconString = '';
   var exeName = '';
+  var iconName = name.split('_')[0] + '.png';
+  var iconPath = ipasDir + iconName;
+
   if (process.platform == 'darwin') {
     exeName = 'pngdefry-osx';
   } else {
@@ -214,6 +239,9 @@ function itemInfoWithName(name, ipasDir) {
         var buffer = new Buffer(ipaEntry.getData());
         if (buffer.length) {
           fs.writeFileSync(tmpIn, buffer);
+          if (false == fs.existsSync(iconPath)) {
+            fs.writeFileSync(iconPath, buffer);
+          }
           var result = exec(path.join(__dirname, '..', exeName + ' -s _tmp ') + ' ' + tmpIn).output;
           iconString = 'data:image/png;base64,' + base64_encode(tmpOut);
         }
